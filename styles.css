@@ -1,0 +1,43 @@
+.tlv-years {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  column-gap: 0.5rem;
+  color: var(--text-normal);
+}
+
+.tlv-timeline {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  margin: 0.8rem 0 0.6rem 0;
+  background-color: var(--color-base-30);
+}
+.tlv-timeline-highlight {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background-color: var(--color-accent);
+  z-index: 1;
+}
+
+.tlv-marker {
+  position: absolute;
+  top: -5px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--color-base-50);
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+.tlv-marker h4.tlv-date-title {
+  margin-block-start: 0;
+}
+
+.tlv-popup.popover.hover-popover {
+  display: none;
+  top: 1.8rem;
+  padding: var(--size-4-3);
+}
