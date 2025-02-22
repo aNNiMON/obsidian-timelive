@@ -73,17 +73,13 @@ export class Timelive {
         this.root.style.width = `${Math.floor(totalYearsWidth)}px`;
       }
     }
-    this.events
-      .map((e) => this.updatePosition(e))
-      .sort((a, b) => a.position - b.position)
-      // TODO: merge closest events
+    this.mergeClosestEvents(this.events)
       .forEach((event) => {
         const marker = timelineLine.createDiv({ cls: "tlv-marker" });
         marker.style.left = `${event.position}%`;
 
         const popup = marker.createDiv({ cls: "tlv-popup popover hover-popover" });
-        const date = event.date.toLocaleDateString();
-        popup.innerHTML = `<h4 class="tlv-date-title">${date}</h4>` + event.content;
+        popup.innerHTML = this.formatEvent(event);
         marker.onmouseover = marker.ontouchstart = () => {
           popup.style.display = "block";
         };
@@ -93,9 +89,29 @@ export class Timelive {
       });
   }
 
-  private updatePosition(event: TimeEvent): TimeEvent {
-    event.position = this.calculatePosition(event.date);
-    return event;
+  private mergeClosestEvents(events: TimeEvent[]): TimeEvent[] {
+    const CLOSEST_DELTA = 1; // %
+    const merged: TimeEvent[] = [];
+    let lastPosition: number;
+    events
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .forEach((event, i) => {
+        event.position = this.calculatePosition(event.date);
+        if (i > 0 && (event.position - lastPosition) < CLOSEST_DELTA) {
+          merged[merged.length - 1].content += this.formatEvent(event, "<hr/>");
+        } else {
+          lastPosition = event.position;
+          merged.push(event);
+        }
+      });
+    return merged;
+  }
+
+  private formatEvent(event: TimeEvent, before: string = ""): string {
+    const date = event.date.toLocaleDateString();
+    return before +
+      `<h4 class="tlv-date-title">${date}</h4>` +
+      event.content;
   }
 
   private calculatePosition(date: Date): number {
