@@ -1,7 +1,6 @@
 const DAYS_IN_YEAR = 365.2422;
 const MILLIS_IN_DAY = 1000 * 3600 * 24;
 const MILLIS_IN_YEAR = MILLIS_IN_DAY * DAYS_IN_YEAR;
-const MIN_YEAR_WIDTH_IN_PX = 120;
 
 interface TimeEvent {
   date: Date;
@@ -55,9 +54,10 @@ export class Timelive {
     const yearsContainer = this.root.createDiv({ cls: "tlv-years" });
     const fromYear = this.minDate?.getFullYear() ?? (new Date().getFullYear());
     const toYear = 1 + (this.maxDate?.getFullYear() ?? fromYear);
-    for (let year = fromYear; year <= toYear; year++) {
-      yearsContainer.createSpan({ text: `${year}` });
-    }
+    const years: Set<number> = this.splitYears(new Set<number>(), fromYear, toYear, 0);
+    [...years]
+      .sort()
+      .forEach((year) => yearsContainer.createSpan({ text: `${year}` }));
   }
 
   private renderLine() {
@@ -68,10 +68,6 @@ export class Timelive {
       const width = this.calculatePosition(this.maxDate!) - start;
       highlight.style.left = `${start}%`;
       highlight.style.width = `${width}%`;
-      const totalYearsWidth = MIN_YEAR_WIDTH_IN_PX * this.totalDays / DAYS_IN_YEAR;
-      if (this.root.innerWidth < totalYearsWidth) {
-        this.root.style.width = `${Math.floor(totalYearsWidth)}px`;
-      }
     }
     this.mergeClosestEvents(this.events)
       .forEach((event) => {
@@ -120,6 +116,17 @@ export class Timelive {
     const value = (deltaDays / this.totalDays) * 100;
     // Round to 3 decimal points
     return Math.round(value * 1000) / 1000;
+  }
+
+  // Recursively split years for building a years line
+  private splitYears(years: Set<number>, a: number, b: number, level: number): Set<number> {
+    if (level < 3 && a != b) {
+      years.add(a).add(b);
+      const average = Math.floor(a / 2 + b / 2);
+      this.splitYears(years, a, average, level + 1);
+      this.splitYears(years, average, b, level + 1);
+    }
+    return years;
   }
 
   private parseDate(dateString: string): Date {
