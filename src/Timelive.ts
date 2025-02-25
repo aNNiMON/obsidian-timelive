@@ -1,3 +1,5 @@
+import { DateTransformer } from "./DateTransformer";
+
 const DAYS_IN_YEAR = 365.2422;
 const MILLIS_IN_DAY = 1000 * 3600 * 24;
 const MILLIS_IN_YEAR = MILLIS_IN_DAY * DAYS_IN_YEAR;
@@ -10,6 +12,7 @@ interface TimeEvent {
 
 export class Timelive {
   private root: HTMLElement;
+  private transformer: DateTransformer;
   private events: TimeEvent[] = [];
   // For timeline computation
   private minDate?: Date;
@@ -17,12 +20,13 @@ export class Timelive {
   private startDateTime: number = 0;
   private totalDays: number = 0;
 
-  constructor(root: HTMLElement) {
+  constructor(root: HTMLElement, transformer: DateTransformer) {
     this.root = root;
+    this.transformer = transformer;
   }
 
   public addEvent(dateString: string, content: string) {
-    const date = this.parseDate(dateString.toLowerCase());
+    const date = this.transformer.parser.parseDate(dateString.trim().toLowerCase());
     this.events.push({ date, content, position: 0 });
     // Recalculate min/max dates
     const time = date.getTime();
@@ -104,7 +108,7 @@ export class Timelive {
   }
 
   private formatEvent(event: TimeEvent, before: string = ""): string {
-    const date = event.date.toLocaleDateString();
+    const date = this.transformer.formatter.formatDate(event.date);
     return before +
       `<h4 class="tlv-date-title">${date}</h4>` +
       event.content;
@@ -127,13 +131,5 @@ export class Timelive {
       this.splitYears(years, average, b, level + 1);
     }
     return years;
-  }
-
-  private parseDate(dateString: string): Date {
-    // TODO: better date parsing
-    if (/now|today|present/.test(dateString)) {
-      return new Date();
-    }
-    return new Date(dateString);
   }
 }
