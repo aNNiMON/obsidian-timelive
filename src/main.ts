@@ -16,8 +16,8 @@ export default class TimelivePlugin extends Plugin {
     await this.loadSettings();
 
     const transformer = new DateTransformer(
-      new TimeliveDateParser(),
-      new TimeliveDateFormatter(),
+      new TimeliveDateParser(this.settings),
+      new TimeliveDateFormatter(this.settings),
     );
 
     this.registerMarkdownPostProcessor((element, _context) => {
