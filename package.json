@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-    "test": "jest"
+    "lint": "eslint . --ext .ts",
+    "test": "jest",
+    "plugin-install": "cp main.js styles.css ../obsidian-timelive-example/.obsidian/plugins/timelive"
   },
   "keywords": [],
   "author": "",

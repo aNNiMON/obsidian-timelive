@@ -6,8 +6,8 @@ import { TimeliveDateFormatter } from "./DateFormatter";
 import { DEFAULT_SETTINGS, TimeliveSettings } from "./TimeliveSettings";
 import { TimeliveSettingTab } from "./TimeliveSettingTab";
 
-const REGEX_COMMON: RegExp = /^\|(.{3,30}?)\|/;
-const REGEX_COMMON_REPLACE: RegExp = /^\s*<span.*?\/span>\|(.{3,30}?)\|\s*/gm;
+const REGEX_COMMON = /^\|(.{3,30}?)\|/;
+const REGEX_COMMON_REPLACE = /^\s*<span.*?\/span>\|(.{3,30}?)\|\s*/gm;
 
 export default class TimelivePlugin extends Plugin {
   settings: TimeliveSettings = DEFAULT_SETTINGS;

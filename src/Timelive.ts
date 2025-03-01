@@ -17,8 +17,8 @@ export class Timelive {
   // For timeline computation
   private minDate?: Date;
   private maxDate?: Date;
-  private startDateTime: number = 0;
-  private totalDays: number = 0;
+  private startDateTime = 0;
+  private totalDays = 0;
 
   constructor(root: HTMLElement, transformer: DateTransformer) {
     this.root = root;
@@ -30,7 +30,7 @@ export class Timelive {
     this.events.push({ date, content, position: 0 });
     // Recalculate min/max dates
     const time = date.getTime();
-    if (!this.minDate) {
+    if (!this.minDate || !this.maxDate) {
       this.minDate = date;
       this.maxDate = date;
       this.startDateTime = time;
@@ -38,12 +38,12 @@ export class Timelive {
       if (time < this.minDate.getTime()) {
         this.minDate = date;
         this.startDateTime = time;
-      } else if (time > this.maxDate!.getDate()) {
+      } else if (time > this.maxDate.getDate()) {
         this.maxDate = date;
       } else return; // no updates to min/max dates -> skip
     }
     // Recalculate total days
-    const deltaYears = 1 + this.maxDate!.getFullYear() - this.minDate.getFullYear();
+    const deltaYears = 1 + this.maxDate.getFullYear() - this.minDate.getFullYear();
     this.totalDays = deltaYears * DAYS_IN_YEAR;
   }
 
@@ -66,10 +66,10 @@ export class Timelive {
 
   private renderLine() {
     const timelineLine = this.root.createDiv({ cls: "tlv-timeline" });
-    if (this.minDate) {
+    if (this.minDate && this.maxDate) {
       const highlight = timelineLine.createDiv({ cls: "tlv-timeline-highlight" });
       const start = this.calculatePosition(this.minDate);
-      const width = this.calculatePosition(this.maxDate!) - start;
+      const width = this.calculatePosition(this.maxDate) - start;
       highlight.style.left = `${start}%`;
       highlight.style.width = `${width}%`;
     }
@@ -107,7 +107,7 @@ export class Timelive {
     return merged;
   }
 
-  private formatEvent(event: TimeEvent, before: string = ""): string {
+  private formatEvent(event: TimeEvent, before = ""): string {
     const date = this.transformer.formatter.formatDate(event.date);
     return before +
       `<h4 class="tlv-date-title">${date}</h4>` +
