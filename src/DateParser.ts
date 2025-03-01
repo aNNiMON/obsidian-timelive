@@ -1,5 +1,4 @@
 import { TimeliveSettings } from "./TimeliveSettings";
-import { moment } from "obsidian";
 
 export interface DateParser {
   parseDate(dateString: string): Date;
@@ -36,14 +35,14 @@ export class TimeliveDateParser implements DateParser {
       return new Date();
     }
     // First try according to the settings, then fallback to YMD
-    const formats = [this.settings.parseDateFormat, "ymd"].unique();
+    const formats = [this.settings.parseDateFormat, "ymd"];
     for (const format of formats) {
       const { pattern, ymdIndices } = DATE_MATCHERS[format];
       const m = dateString.match(pattern);
       if (m) {
         const yeartmp = parseInt(m[ymdIndices[0]]);
         const year = yeartmp < 100
-          ? moment.parseTwoDigitYear(yeartmp.toString().padStart(2, "0"))
+          ? window.moment.parseTwoDigitYear(yeartmp.toString().padStart(2, "0"))
           : yeartmp;
         const month = parseInt(m[ymdIndices[1]]);
         const day = parseInt(m[ymdIndices[2]]);
@@ -52,7 +51,7 @@ export class TimeliveDateParser implements DateParser {
           month.toString().padStart(2, "0"),
           day.toString().padStart(2, "0")
         ].join("-");
-        const date = moment(datestr, "YYYY-MM-DD");
+        const date = window.moment(datestr, "YYYY-MM-DD");
         if (date.isValid()) {
           return date.toDate();
         }
