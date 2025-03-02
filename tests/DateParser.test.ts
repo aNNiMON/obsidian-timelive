@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import { DateParser, TimeliveDateParser } from "../src/DateParser.ts";
+import { DateFormat, DateParser, TimeliveDateParser } from "../src/DateParser.ts";
 import { MockTimeliveSettings } from "./MockTimeliveSettings.ts";
 import moment from "moment";
 
@@ -19,7 +19,7 @@ Deno.test("DateParser", async (test) => {
       "2008-02/09", "2008-02 09", "2008/02-09",
     ];
     const dateParser: DateParser = new TimeliveDateParser(
-      MockTimeliveSettings.ofParseDateFormat("ymd"),
+      MockTimeliveSettings.ofParseDateFormat(DateFormat.YMD),
     );
     for (const dateStr of dates) {
       const result = dateParser.parseDate(dateStr);
@@ -36,7 +36,7 @@ Deno.test("DateParser", async (test) => {
       "09/02-2008", "09 02-2008", "09-02/2008",
     ];
     const dateParser: DateParser = new TimeliveDateParser(
-      MockTimeliveSettings.ofParseDateFormat("dmy"),
+      MockTimeliveSettings.ofParseDateFormat(DateFormat.DMY),
     );
     for (const dateStr of dates) {
       const result = dateParser.parseDate(dateStr);
@@ -53,7 +53,7 @@ Deno.test("DateParser", async (test) => {
       "02/09-2008", "02 09-2008", "02-09/2008",
     ];
     const dateParser: DateParser = new TimeliveDateParser(
-      MockTimeliveSettings.ofParseDateFormat("mdy"),
+      MockTimeliveSettings.ofParseDateFormat(DateFormat.MDY),
     );
     for (const dateStr of dates) {
       const result = dateParser.parseDate(dateStr);

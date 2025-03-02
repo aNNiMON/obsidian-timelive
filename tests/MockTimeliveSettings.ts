@@ -1,14 +1,15 @@
+import { DateFormat } from "../src/DateParser.ts";
 import { TimeliveSettings } from "../src/TimeliveSettings.ts";
 
 export class MockTimeliveSettings implements TimeliveSettings {
   previewTitleDateFormat = "";
-  parseDateFormat = "";
+  parseDateFormat = DateFormat.YMD;
 
   static ofPreviewTitleDateFormat(format: string): MockTimeliveSettings {
-    return { previewTitleDateFormat: format, parseDateFormat: "" };
+    return { previewTitleDateFormat: format, parseDateFormat: DateFormat.YMD };
   }
 
-  static ofParseDateFormat(format: string): MockTimeliveSettings {
+  static ofParseDateFormat(format: DateFormat): MockTimeliveSettings {
     return { previewTitleDateFormat: "", parseDateFormat: format };
   }
 }

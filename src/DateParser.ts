@@ -5,7 +5,12 @@ export interface DateParser {
   parseDate(dateString: string): Moment;
 }
 
-export const PARSE_DATE_FORMATS: Record<string, string> = {
+export enum DateFormat {
+  YMD = "ymd",
+  DMY = "dmy",
+  MDY = "mdy",
+}
+export const PARSE_DATE_FORMATS: Record<DateFormat, string> = {
   ymd: "Years Months Days",
   dmy: "Days Months Years",
   mdy: "Months Days Years",
@@ -21,7 +26,7 @@ interface DateMatcher {
   ymdIndices: number[];
 }
 
-const DATE_MATCHERS: Record<string, DateMatcher> = {
+const DATE_MATCHERS: Record<DateFormat, DateMatcher> = {
   ymd: { pattern: /(\d{1,4})[ \-/](\d{1,2})[ \-/](\d{1,2})/, ymdIndices: [1, 2, 3] },
   dmy: { pattern: /(\d{1,2})[ \-/](\d{1,2})[ \-/](\d{1,4})/, ymdIndices: [3, 2, 1] },
   mdy: { pattern: /(\d{1,2})[ \-/](\d{1,2})[ \-/](\d{1,4})/, ymdIndices: [3, 1, 2] },
@@ -43,7 +48,7 @@ export class TimeliveDateParser implements DateParser {
       return moment();
     }
     // First try according to the settings, then fallback to YMD
-    const formats = [this.settings.parseDateFormat, "ymd"];
+    const formats = [this.settings.parseDateFormat, DateFormat.YMD];
     for (const format of formats) {
       const { pattern, ymdIndices } = DATE_MATCHERS[format];
       const m = dateString.match(pattern);

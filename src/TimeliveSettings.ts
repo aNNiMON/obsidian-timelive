@@ -1,9 +1,11 @@
+import { DateFormat } from "./DateParser.ts";
+
 export interface TimeliveSettings {
   previewTitleDateFormat: string;
-  parseDateFormat: string;
+  parseDateFormat: DateFormat;
 }
 
 export const DEFAULT_SETTINGS: TimeliveSettings = {
   previewTitleDateFormat: "YYYY-MM-DD",
-  parseDateFormat: "ymd",
+  parseDateFormat: DateFormat.YMD,
 };

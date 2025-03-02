@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import TimelivePlugin from "./main.ts";
-import { PARSE_DATE_FORMATS } from "./DateParser.ts";
+import { DateFormat, PARSE_DATE_FORMATS } from "./DateParser.ts";
 
 export class TimeliveSettingTab extends PluginSettingTab {
   plugin: TimelivePlugin;
@@ -33,7 +33,7 @@ export class TimeliveSettingTab extends PluginSettingTab {
         dropdown.addOptions(PARSE_DATE_FORMATS);
         dropdown.setValue(this.plugin.settings.parseDateFormat);
         dropdown.onChange(async (value: string) => {
-          this.plugin.settings.parseDateFormat = value;
+          this.plugin.settings.parseDateFormat = value as DateFormat;
           await this.plugin.saveSettings();
         });
       });
