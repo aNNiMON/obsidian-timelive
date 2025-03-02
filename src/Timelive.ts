@@ -1,11 +1,10 @@
+import type { Moment } from "moment";
 import { DateTransformer } from "./DateTransformer.ts";
 
 const DAYS_IN_YEAR = 365.2422;
-const MILLIS_IN_DAY = 1000 * 3600 * 24;
-const MILLIS_IN_YEAR = MILLIS_IN_DAY * DAYS_IN_YEAR;
 
 interface TimeEvent {
-  date: Date;
+  date: Moment;
   content: string;
   position: number;
 }
@@ -15,8 +14,8 @@ export class Timelive {
   private transformer: DateTransformer;
   private events: TimeEvent[] = [];
   // For timeline computation
-  private minDate?: Date;
-  private maxDate?: Date;
+  private minDate?: Moment;
+  private maxDate?: Moment;
   private startDateTime = 0;
   private totalDays = 0;
 
@@ -29,21 +28,21 @@ export class Timelive {
     const date = this.transformer.parser.parseDate(dateString.trim().toLowerCase());
     this.events.push({ date, content, position: 0 });
     // Recalculate min/max dates
-    const time = date.getTime();
+    const time = date.valueOf();
     if (!this.minDate || !this.maxDate) {
       this.minDate = date;
       this.maxDate = date;
       this.startDateTime = time;
     } else {
-      if (time < this.minDate.getTime()) {
+      if (time < this.minDate.valueOf()) {
         this.minDate = date;
         this.startDateTime = time;
-      } else if (time > this.maxDate.getDate()) {
+      } else if (time > this.maxDate.valueOf()) {
         this.maxDate = date;
       } else return; // no updates to min/max dates -> skip
     }
     // Recalculate total days
-    const deltaYears = 1 + this.maxDate.getFullYear() - this.minDate.getFullYear();
+    const deltaYears = 1 + this.maxDate.diff(this.minDate, "years");
     this.totalDays = deltaYears * DAYS_IN_YEAR;
   }
 
@@ -56,8 +55,8 @@ export class Timelive {
 
   private renderYears() {
     const yearsContainer = this.root.createDiv({ cls: "tlv-years" });
-    const fromYear = this.minDate?.getFullYear() ?? (new Date().getFullYear());
-    const toYear = 1 + (this.maxDate?.getFullYear() ?? fromYear);
+    const fromYear = this.minDate?.year() ?? (new Date().getFullYear());
+    const toYear = 1 + (this.maxDate?.year() ?? fromYear);
     const years: Set<number> = this.splitYears(new Set<number>(), fromYear, toYear, 0);
     [...years]
       .sort()
@@ -94,7 +93,7 @@ export class Timelive {
     const merged: TimeEvent[] = [];
     let lastPosition: number;
     events
-      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .sort((a, b) => a.date.valueOf() - b.date.valueOf())
       .forEach((event, i) => {
         event.position = this.calculatePosition(event.date);
         if (i > 0 && (event.position - lastPosition) < CLOSEST_DELTA) {
@@ -114,9 +113,8 @@ export class Timelive {
       event.content;
   }
 
-  private calculatePosition(date: Date): number {
-    const start = Math.floor(this.startDateTime / MILLIS_IN_YEAR) * MILLIS_IN_YEAR;
-    const deltaDays = (date.getTime() - start) / MILLIS_IN_DAY;
+  private calculatePosition(date: Moment): number {
+    const deltaDays = date.diff(this.startDateTime, "days");
     const value = (deltaDays / this.totalDays) * 100;
     // Round to 3 decimal points
     return Math.round(value * 1000) / 1000;

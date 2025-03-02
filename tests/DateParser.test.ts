@@ -23,7 +23,7 @@ Deno.test("DateParser", async (test) => {
     );
     for (const dateStr of dates) {
       const result = dateParser.parseDate(dateStr);
-      expect(result).toEqual(expected);
+      expect(result.toDate()).toEqual(expected);
     }
   });
 
@@ -40,7 +40,7 @@ Deno.test("DateParser", async (test) => {
     );
     for (const dateStr of dates) {
       const result = dateParser.parseDate(dateStr);
-      expect(result).toEqual(expected);
+      expect(result.toDate()).toEqual(expected);
     }
   });
 
@@ -57,7 +57,7 @@ Deno.test("DateParser", async (test) => {
     );
     for (const dateStr of dates) {
       const result = dateParser.parseDate(dateStr);
-      expect(result).toEqual(expected);
+      expect(result.toDate()).toEqual(expected);
     }
   });
 });

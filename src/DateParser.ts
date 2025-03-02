@@ -2,7 +2,7 @@ import type { Moment } from "moment";
 import { TimeliveSettings } from "./TimeliveSettings.ts";
 
 export interface DateParser {
-  parseDate(dateString: string): Date;
+  parseDate(dateString: string): Moment;
 }
 
 export const PARSE_DATE_FORMATS: Record<string, string> = {
@@ -12,7 +12,7 @@ export const PARSE_DATE_FORMATS: Record<string, string> = {
 };
 
 interface MomentCallable {
-  (date: string, format: string): Moment;
+  (date?: string, format?: string): Moment;
   parseTwoDigitYear(yearstr: string): number;
 }
 
@@ -36,12 +36,12 @@ export class TimeliveDateParser implements DateParser {
     this.settings = settings;
   }
 
-  public parseDate(dateString: string): Date {
-    if (REGEX_PRESENT.test(dateString)) {
-      return new Date();
-    }
+  public parseDate(dateString: string): Moment {
     // @ts-ignore: deno lack of type
     const moment: MomentCallable = globalThis.moment;
+    if (REGEX_PRESENT.test(dateString)) {
+      return moment();
+    }
     // First try according to the settings, then fallback to YMD
     const formats = [this.settings.parseDateFormat, "ymd"];
     for (const format of formats) {
@@ -61,10 +61,10 @@ export class TimeliveDateParser implements DateParser {
         ].join("-");
         const date = moment(datestr, "YYYY-MM-DD");
         if (date.isValid()) {
-          return date.toDate();
+          return date;
         }
       }
     }
-    return new Date(dateString);
+    return moment(dateString);
   }
 }
