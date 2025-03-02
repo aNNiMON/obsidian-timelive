@@ -1,4 +1,5 @@
-import { TimeliveSettings } from "./TimeliveSettings";
+import type { Moment } from "moment";
+import { TimeliveSettings } from "./TimeliveSettings.ts";
 
 export interface DateParser {
   parseDate(dateString: string): Date;
@@ -9,6 +10,11 @@ export const PARSE_DATE_FORMATS: Record<string, string> = {
   dmy: "Days Months Years",
   mdy: "Months Days Years",
 };
+
+interface MomentCallable {
+  (date: string, format: string): Moment;
+  parseTwoDigitYear(yearstr: string): number;
+}
 
 interface DateMatcher {
   pattern: RegExp;
@@ -34,6 +40,8 @@ export class TimeliveDateParser implements DateParser {
     if (REGEX_PRESENT.test(dateString)) {
       return new Date();
     }
+    // @ts-ignore: deno lack of type
+    const moment: MomentCallable = globalThis.moment;
     // First try according to the settings, then fallback to YMD
     const formats = [this.settings.parseDateFormat, "ymd"];
     for (const format of formats) {
@@ -42,16 +50,16 @@ export class TimeliveDateParser implements DateParser {
       if (m) {
         const yeartmp = parseInt(m[ymdIndices[0]]);
         const year = yeartmp < 100
-          ? window.moment.parseTwoDigitYear(yeartmp.toString().padStart(2, "0"))
+          ? moment.parseTwoDigitYear(yeartmp.toString().padStart(2, "0"))
           : yeartmp;
         const month = parseInt(m[ymdIndices[1]]);
         const day = parseInt(m[ymdIndices[2]]);
         const datestr = [
           year.toString().padStart(4, "0"),
           month.toString().padStart(2, "0"),
-          day.toString().padStart(2, "0")
+          day.toString().padStart(2, "0"),
         ].join("-");
-        const date = window.moment(datestr, "YYYY-MM-DD");
+        const date = moment(datestr, "YYYY-MM-DD");
         if (date.isValid()) {
           return date.toDate();
         }

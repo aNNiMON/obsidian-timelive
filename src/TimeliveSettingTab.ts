@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import TimelivePlugin from "./main";
-import { PARSE_DATE_FORMATS } from "./DateParser";
+import TimelivePlugin from "./main.ts";
+import { PARSE_DATE_FORMATS } from "./DateParser.ts";
 
 export class TimeliveSettingTab extends PluginSettingTab {
   plugin: TimelivePlugin;
