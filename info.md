@@ -4,5 +4,6 @@
 - |2025-02-19| First working prototype
 - |2025-02-21| Dealing with styles so it looks better on both light/dark themes
 - |2025-02-24| Improved years line rendering
-- |2025-03-01| Added settings
+- |2025-03-01| Added settings, pre-release
+- |2025-03-02| Switched to Deno, added an editor command
 - |present| Developing the `Timelive` plugin 

@@ -1,6 +1,7 @@
-import { Plugin } from "obsidian";
+import type { Moment } from "moment";
+import { Editor, Plugin } from "obsidian";
 import { Timelive } from "./Timelive.ts";
-import { TimeliveDateParser } from "./DateParser.ts";
+import { DateFormat, TimeliveDateParser } from "./DateParser.ts";
 import { DateTransformer } from "./DateTransformer.ts";
 import { TimeliveDateFormatter } from "./DateFormatter.ts";
 import { DEFAULT_SETTINGS, TimeliveSettings } from "./TimeliveSettings.ts";
@@ -19,6 +20,29 @@ export default class TimelivePlugin extends Plugin {
       new TimeliveDateParser(this.settings),
       new TimeliveDateFormatter(this.settings),
     );
+
+    this.addCommand({
+      id: "timelive-new-block",
+      name: "New Timelive block",
+      editorCallback: (editor: Editor) => {
+        const formats: Record<DateFormat, string> = {
+          ymd: "YYYY-MM-DD",
+          dmy: "DD/MM/YYYY",
+          mdy: "MM/DD/YYYY",
+        };
+        const format = formats[this.settings.parseDateFormat];
+        // @ts-ignore: deno lack of type
+        const moment: () => Moment = globalThis.moment;
+        const dates = [
+          { date: moment().subtract(1, "year"), desc: "Start" },
+          { date: moment().subtract(1, "month"), desc: "One month ago" },
+          { date: moment().subtract(1, "day"), desc: "Yesterday" },
+        ].map(({ date, desc }) => "- |" + date.format(format) + "| " + desc);
+        editor.replaceSelection(
+          "## Demo\n\n" + dates.join("\n") + "\n- |now| Now\n",
+        );
+      },
+    });
 
     this.registerMarkdownPostProcessor((element, _context) => {
       const ul = element.find("ul");
