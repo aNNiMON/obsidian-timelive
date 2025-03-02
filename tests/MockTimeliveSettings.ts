@@ -1,4 +1,4 @@
-import { TimeliveSettings } from "../src/TimeliveSettings";
+import { TimeliveSettings } from "../src/TimeliveSettings.ts";
 
 export class MockTimeliveSettings implements TimeliveSettings {
   previewTitleDateFormat = "";

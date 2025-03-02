@@ -1,5 +1,5 @@
-import { DateParser } from "./DateParser";
-import { DateFormatter } from "./DateFormatter";
+import { DateParser } from "./DateParser.ts";
+import { DateFormatter } from "./DateFormatter.ts";
 
 export class DateTransformer {
   constructor(public parser: DateParser, public formatter: DateFormatter) {

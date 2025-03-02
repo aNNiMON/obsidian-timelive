@@ -1,10 +1,10 @@
 import { Plugin } from "obsidian";
-import { Timelive } from "./Timelive";
-import { TimeliveDateParser } from "./DateParser";
-import { DateTransformer } from "./DateTransformer";
-import { TimeliveDateFormatter } from "./DateFormatter";
-import { DEFAULT_SETTINGS, TimeliveSettings } from "./TimeliveSettings";
-import { TimeliveSettingTab } from "./TimeliveSettingTab";
+import { Timelive } from "./Timelive.ts";
+import { TimeliveDateParser } from "./DateParser.ts";
+import { DateTransformer } from "./DateTransformer.ts";
+import { TimeliveDateFormatter } from "./DateFormatter.ts";
+import { DEFAULT_SETTINGS, TimeliveSettings } from "./TimeliveSettings.ts";
+import { TimeliveSettingTab } from "./TimeliveSettingTab.ts";
 
 const REGEX_COMMON = /^\|(.{3,30}?)\|/;
 const REGEX_COMMON_REPLACE = /^\s*<span.*?\/span>\|(.{3,30}?)\|\s*/gm;

@@ -1,4 +1,4 @@
-import { DateTransformer } from "./DateTransformer";
+import { DateTransformer } from "./DateTransformer.ts";
 
 const DAYS_IN_YEAR = 365.2422;
 const MILLIS_IN_DAY = 1000 * 3600 * 24;
