@@ -2,6 +2,7 @@ import type { Moment } from "moment";
 import { TimeliveSettings } from "./TimeliveSettings.ts";
 
 export interface DateParser {
+  parseSpan(datesString: string): Moment[];
   parseDate(dateString: string): Moment;
 }
 
@@ -39,6 +40,10 @@ export class TimeliveDateParser implements DateParser {
 
   constructor(settings: TimeliveSettings) {
     this.settings = settings;
+  }
+
+  public parseSpan(datesString: string): Moment[] {
+    return datesString.split(" - ").map((d) => this.parseDate(d.trim()));
   }
 
   public parseDate(dateString: string): Moment {

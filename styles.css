@@ -21,17 +21,28 @@
   z-index: 1;
 }
 
-.tlv-marker {
+.tlv-marker,
+.tlv-span {
   position: absolute;
+  background-color: var(--color-base-50);
+  cursor: pointer;
+}
+.tlv-marker {
   top: -5px;
   width: 12px;
   height: 12px;
-  background-color: var(--color-base-50);
   border-radius: 50%;
-  cursor: pointer;
   transform: translateX(-50%);
-  z-index: 2;
+  z-index: 3;
 }
+.tlv-span {
+  top: -1px;
+  height: 5px;
+  border-radius: 6px;
+  z-index: 2;
+  background-color: var(--color-base-60);
+}
+.tlv-span h4.tlv-date-title,
 .tlv-marker h4.tlv-date-title {
   margin-block-start: 0;
 }
