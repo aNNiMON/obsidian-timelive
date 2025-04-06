@@ -6,7 +6,9 @@ Plugin for [Obsidian](https://obsidian.md) that turns a list of dates into a tim
 
 The key difference from other timeline plugins is that Timelive doesn't use a code block. It's much easier to format any date event, provide a link or block of code, add an image or a video, etc.
 
-To build a timeline, you need to define a list of dates, enclosed by the `|` symbol. The date format is automatically detected, but in case of ambiguity, the preferred format can be selected in the preferences. 
+To build a timeline, you need to define a list of dates, enclosed by the `|` symbol. The date format is automatically detected, but in case of ambiguity, the preferred format can be selected in the preferences.
+
+There is also support for time spans. Just define two dates separated by ` - ` and they will be turned into a span.
 
 ```
 ## Demo
@@ -14,6 +16,7 @@ To build a timeline, you need to define a list of dates, enclosed by the `|` sym
 - |2021/04/28| Second event
 - |21 6 12| Third event
    It's also a valid date
+- |2018-07-01 - 2021-11-14| Time span
 - |2025-02-05| **bold**, *italic*, ~~strikethrough~~, link to another note [[Welcome]]
 - |2025-02-06| Merged events
   Test links and multiline code:
@@ -26,6 +29,7 @@ To build a timeline, you need to define a list of dates, enclosed by the `|` sym
     column-gap: 0.5rem;
     color: var(--text-normal);
    }
+   ```
 - |now| Dynamic event, means that the timeline (e.g. your project) is **live**
 - |2056-05-24| Some future event 
 ```
