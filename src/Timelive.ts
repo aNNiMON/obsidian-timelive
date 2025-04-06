@@ -1,13 +1,8 @@
 import type { Moment } from "moment";
 import { DateTransformer } from "./DateTransformer.ts";
+import { SingleTimeEvent, SpanTimeEvent, TimeEvent, TimeEventType } from "./TimeEvent.ts";
 
 const DAYS_IN_YEAR = 365.2422;
-
-interface TimeEvent {
-  date: Moment;
-  content: string;
-  position: number;
-}
 
 export class Timelive {
   private root: HTMLElement;
@@ -25,9 +20,45 @@ export class Timelive {
   }
 
   public addEvent(dateString: string, content: string) {
-    const date = this.transformer.parser.parseDate(dateString.trim().toLowerCase());
-    this.events.push({ date, content, position: 0 });
-    // Recalculate min/max dates
+    const dates = this.transformer.parser.parseSpan(dateString.trim().toLowerCase());
+    switch (dates.length) {
+      case 0:
+        return;
+      case 1:
+        return this.addSingleEvent(dates[0], content);
+      default:
+        return this.addSpan(dates[0], dates[1], content);
+    }
+  }
+
+  private addSingleEvent(date: Moment, content: string) {
+    this.events.push(
+      {
+        date,
+        content,
+        position: 0,
+        type: TimeEventType.Single,
+      } as SingleTimeEvent,
+    );
+    this.recalculateMinMaxDates(date);
+  }
+
+  private addSpan(fromDate: Moment, toDate: Moment, content: string) {
+    this.events.push(
+      {
+        fromDate,
+        toDate,
+        content,
+        position: 0,
+        width: 0,
+        type: TimeEventType.Span,
+      } as SpanTimeEvent,
+    );
+    this.recalculateMinMaxDates(fromDate);
+    this.recalculateMinMaxDates(toDate);
+  }
+
+  private recalculateMinMaxDates(date: Moment) {
     const time = date.valueOf();
     if (!this.minDate || !this.maxDate) {
       this.minDate = date;
@@ -74,18 +105,39 @@ export class Timelive {
     }
     this.mergeClosestEvents(this.events)
       .forEach((event) => {
-        const marker = timelineLine.createDiv({ cls: "tlv-marker" });
-        marker.style.left = `${event.position}%`;
-
-        const popup = marker.createDiv({ cls: "tlv-popup popover hover-popover" });
-        popup.innerHTML = this.formatEvent(event);
-        marker.onmouseover = marker.ontouchstart = () => {
-          popup.style.display = "block";
-        };
-        marker.onmouseout = marker.ontouchend = () => {
-          popup.style.display = "none";
-        };
+        switch (event.type) {
+          case TimeEventType.Single:
+            this.createMarker(timelineLine, event as SingleTimeEvent);
+            break;
+          case TimeEventType.Span:
+            this.createSpan(timelineLine, event as SpanTimeEvent);
+            break;
+        }
       });
+  }
+
+  private createMarker(line: HTMLElement, event: SingleTimeEvent) {
+    const marker = line.createDiv({ cls: "tlv-marker" });
+    marker.style.left = `${event.position}%`;
+    this.createPopover(marker, this.formatSingleEvent(event));
+  }
+
+  private createSpan(line: HTMLElement, event: SpanTimeEvent) {
+    const span = line.createDiv({ cls: "tlv-span" });
+    span.style.left = `${event.position}%`;
+    span.style.width = `${event.width}%`;
+    this.createPopover(span, this.formatSpan(event));
+  }
+
+  private createPopover(marker: HTMLElement, html: string) {
+    const popup = marker.createDiv({ cls: "tlv-popup popover hover-popover" });
+    popup.innerHTML = html;
+    marker.onmouseover = marker.ontouchstart = () => {
+      popup.style.display = "block";
+    };
+    marker.onmouseout = marker.ontouchend = () => {
+      popup.style.display = "none";
+    };
   }
 
   private mergeClosestEvents(events: TimeEvent[]): TimeEvent[] {
@@ -93,11 +145,22 @@ export class Timelive {
     const merged: TimeEvent[] = [];
     let lastPosition: number;
     events
+      .filter((event) => event.type === TimeEventType.Span)
+      .map((event) => event as SpanTimeEvent)
+      .sort((a, b) => a.fromDate.valueOf() - b.fromDate.valueOf())
+      .forEach((event) => {
+        event.position = this.calculatePosition(event.fromDate);
+        event.width = this.calculatePosition(event.toDate) - event.position;
+        merged.push(event);
+      });
+    events
+      .filter((event) => event.type === TimeEventType.Single)
+      .map((event) => event as SingleTimeEvent)
       .sort((a, b) => a.date.valueOf() - b.date.valueOf())
       .forEach((event, i) => {
         event.position = this.calculatePosition(event.date);
         if (i > 0 && (event.position - lastPosition) < CLOSEST_DELTA) {
-          merged[merged.length - 1].content += this.formatEvent(event, "<hr/>");
+          merged[merged.length - 1].content += this.formatSingleEvent(event, "<hr/>");
         } else {
           lastPosition = event.position;
           merged.push(event);
@@ -106,8 +169,15 @@ export class Timelive {
     return merged;
   }
 
-  private formatEvent(event: TimeEvent, before = ""): string {
+  private formatSingleEvent(event: SingleTimeEvent, before = ""): string {
     const date = this.transformer.formatter.formatDate(event.date);
+    return before +
+      `<h4 class="tlv-date-title">${date}</h4>` +
+      event.content;
+  }
+
+  private formatSpan(event: SpanTimeEvent, before = ""): string {
+    const date = this.transformer.formatter.formatSpan(event.fromDate, event.toDate);
     return before +
       `<h4 class="tlv-date-title">${date}</h4>` +
       event.content;
