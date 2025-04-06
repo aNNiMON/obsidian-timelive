@@ -3,7 +3,7 @@
   "name": "Timelive",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Turn your dates list into a timeline.",
+  "description": "Turn a list of dates into a timeline.",
   "author": "aNNiMON",
   "authorUrl": "https://projects.annimon.com/",
   "isDesktopOnly": false

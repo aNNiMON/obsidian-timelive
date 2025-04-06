@@ -10,7 +10,7 @@ To build a timeline, you need to define a list of dates, enclosed by the `|` sym
 
 There is also support for time spans. Just define two dates separated by ` - ` and they will be turned into a span.
 
-```
+````
 ## Demo
 - |2011-02-05| Start
 - |2021/04/28| Second event
@@ -32,10 +32,10 @@ There is also support for time spans. Just define two dates separated by ` - ` a
    ```
 - |now| Dynamic event, means that the timeline (e.g. your project) is **live**
 - |2056-05-24| Some future event 
-```
+````
 
 Use `now`, `today` or `present` to indicate that the project is live and that today's marker should be added.
 
-See [info.md](info.md) for a real use case.
-
 ![preview](https://github.com/aNNiMON/obsidian-timelive/blob/images/preview.png?raw=true)
+
+See [info.md](info.md) for a real use case.
