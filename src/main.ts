@@ -23,7 +23,7 @@ export default class TimelivePlugin extends Plugin {
 
     this.addCommand({
       id: "timelive-new-block",
-      name: "New Timelive block",
+      name: "New block",
       editorCallback: (editor: Editor) => {
         const formats: Record<DateFormat, string> = {
           ymd: "YYYY-MM-DD",
