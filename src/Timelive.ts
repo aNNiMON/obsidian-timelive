@@ -20,7 +20,9 @@ export class Timelive {
   }
 
   public addEvent(dateString: string, content: HTMLElement) {
-    const dates = this.transformer.parser.parseSpan(dateString.trim().toLowerCase());
+    const dates = this.transformer.parser.parseSpan(
+      dateString.trim().toLowerCase(),
+    );
     switch (dates.length) {
       case 0:
         return;
@@ -88,7 +90,7 @@ export class Timelive {
     const yearsContainer = this.root.createDiv({ cls: "tlv-years" });
     const fromYear = this.minDate?.year() ?? (new Date().getFullYear());
     const toYear = 1 + (this.maxDate?.year() ?? fromYear);
-    const years: Set<number> = this.splitYears(new Set<number>(), fromYear, toYear, 0);
+    const years = this.splitYears(new Set<number>(), fromYear, toYear, 0);
     [...years]
       .sort()
       .forEach((year) => yearsContainer.createSpan({ text: `${year}` }));
@@ -97,7 +99,9 @@ export class Timelive {
   private renderLine() {
     const timelineLine = this.root.createDiv({ cls: "tlv-timeline" });
     if (this.minDate && this.maxDate) {
-      const highlight = timelineLine.createDiv({ cls: "tlv-timeline-highlight" });
+      const highlight = timelineLine.createDiv({
+        cls: "tlv-timeline-highlight",
+      });
       const start = this.calculatePosition(this.minDate);
       const width = this.calculatePosition(this.maxDate) - start;
       highlight.style.left = `${start}%`;
@@ -132,7 +136,9 @@ export class Timelive {
   }
 
   private createPopover(marker: HTMLElement): HTMLElement {
-    const popover = marker.createDiv({ cls: "tlv-popup popover hover-popover" });
+    const popover = marker.createDiv({
+      cls: "tlv-popup popover hover-popover",
+    });
     marker.onmouseover = marker.ontouchstart = () => {
       popover.style.display = "block";
     };
@@ -162,7 +168,9 @@ export class Timelive {
       .forEach((event, i) => {
         event.position = this.calculatePosition(event.date);
         if (i > 0 && (event.position - lastPosition) < CLOSEST_DELTA) {
-          this.formatSingleEvent(merged[merged.length - 1].content, event, true);
+          const lastEl = merged[merged.length - 1].content;
+          lastEl.createEl("hr");
+          this.formatSingleEvent(lastEl, event);
         } else {
           lastPosition = event.position;
           merged.push(event);
@@ -171,8 +179,7 @@ export class Timelive {
     return merged;
   }
 
-  private formatSingleEvent(parent: HTMLElement, event: SingleTimeEvent, prepend = false) {
-    if (prepend) parent.createEl("hr");
+  private formatSingleEvent(parent: HTMLElement, event: SingleTimeEvent) {
     const date = this.transformer.formatter.formatDate(event.date);
     parent.createEl("h4", { cls: "tlv-date-title", text: date });
     const children = Array.from(event.content.childNodes);
@@ -180,7 +187,10 @@ export class Timelive {
   }
 
   private formatSpan(parent: HTMLElement, event: SpanTimeEvent) {
-    const date = this.transformer.formatter.formatSpan(event.fromDate, event.toDate);
+    const date = this.transformer.formatter.formatSpan(
+      event.fromDate,
+      event.toDate,
+    );
     parent.createEl("h4", { cls: "tlv-date-title", text: date });
     const children = Array.from(event.content.childNodes);
     parent.append(...children);
@@ -194,7 +204,12 @@ export class Timelive {
   }
 
   // Recursively split years for building a years line
-  private splitYears(years: Set<number>, a: number, b: number, level: number): Set<number> {
+  private splitYears(
+    years: Set<number>,
+    a: number,
+    b: number,
+    level: number,
+  ): Set<number> {
     if (level < 3 && a != b) {
       years.add(a).add(b);
       const average = Math.floor(a / 2 + b / 2);

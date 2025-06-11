@@ -1,6 +1,7 @@
-# Obsidian Timelive Plugin
+# Timelive Plugin
 
-Plugin for [Obsidian](https://obsidian.md) that turns a list of dates into a timeline.
+Plugin for [Obsidian](https://obsidian.md) that turns a list of dates into a
+timeline.
 
 ## Usage
 
@@ -31,10 +32,11 @@ There is also support for time spans. Just define two dates separated by ` - ` a
    }
    ```
 - |now| Dynamic event, means that the timeline (e.g. your project) is **live**
-- |2056-05-24| Some future event 
+- |2056-05-24| Some future event
 ````
 
-Use `now`, `today` or `present` to indicate that the project is live and that today's marker should be added.
+Use `now`, `today` or `present` to indicate that the project is live and that
+today's marker should be added.
 
 ![preview](https://github.com/aNNiMON/obsidian-timelive/blob/images/preview.png?raw=true)
 
