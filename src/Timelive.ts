@@ -19,7 +19,7 @@ export class Timelive {
     this.transformer = transformer;
   }
 
-  public addEvent(dateString: string, content: string) {
+  public addEvent(dateString: string, content: HTMLElement) {
     const dates = this.transformer.parser.parseSpan(dateString.trim().toLowerCase());
     switch (dates.length) {
       case 0:
@@ -31,7 +31,7 @@ export class Timelive {
     }
   }
 
-  private addSingleEvent(date: Moment, content: string) {
+  private addSingleEvent(date: Moment, content: HTMLElement) {
     this.events.push(
       {
         date,
@@ -43,7 +43,7 @@ export class Timelive {
     this.recalculateMinMaxDates(date);
   }
 
-  private addSpan(fromDate: Moment, toDate: Moment, content: string) {
+  private addSpan(fromDate: Moment, toDate: Moment, content: HTMLElement) {
     this.events.push(
       {
         fromDate,
@@ -78,7 +78,7 @@ export class Timelive {
   }
 
   public render() {
-    this.root.innerHTML = "";
+    this.root.empty();
     this.root.style.minWidth = "100%";
     this.renderYears();
     this.renderLine();
@@ -119,25 +119,27 @@ export class Timelive {
   private createMarker(line: HTMLElement, event: SingleTimeEvent) {
     const marker = line.createDiv({ cls: "tlv-marker" });
     marker.style.left = `${event.position}%`;
-    this.createPopover(marker, this.formatSingleEvent(event));
+    const popover = this.createPopover(marker);
+    this.formatSingleEvent(popover, event);
   }
 
   private createSpan(line: HTMLElement, event: SpanTimeEvent) {
     const span = line.createDiv({ cls: "tlv-span" });
     span.style.left = `${event.position}%`;
     span.style.width = `${event.width}%`;
-    this.createPopover(span, this.formatSpan(event));
+    const popover = this.createPopover(span);
+    this.formatSpan(popover, event);
   }
 
-  private createPopover(marker: HTMLElement, html: string) {
-    const popup = marker.createDiv({ cls: "tlv-popup popover hover-popover" });
-    popup.innerHTML = html;
+  private createPopover(marker: HTMLElement): HTMLElement {
+    const popover = marker.createDiv({ cls: "tlv-popup popover hover-popover" });
     marker.onmouseover = marker.ontouchstart = () => {
-      popup.style.display = "block";
+      popover.style.display = "block";
     };
     marker.onmouseout = marker.ontouchend = () => {
-      popup.style.display = "none";
+      popover.style.display = "none";
     };
+    return popover;
   }
 
   private mergeClosestEvents(events: TimeEvent[]): TimeEvent[] {
@@ -160,7 +162,7 @@ export class Timelive {
       .forEach((event, i) => {
         event.position = this.calculatePosition(event.date);
         if (i > 0 && (event.position - lastPosition) < CLOSEST_DELTA) {
-          merged[merged.length - 1].content += this.formatSingleEvent(event, "<hr/>");
+          this.formatSingleEvent(merged[merged.length - 1].content, event, true);
         } else {
           lastPosition = event.position;
           merged.push(event);
@@ -169,18 +171,19 @@ export class Timelive {
     return merged;
   }
 
-  private formatSingleEvent(event: SingleTimeEvent, before = ""): string {
+  private formatSingleEvent(parent: HTMLElement, event: SingleTimeEvent, prepend = false) {
+    if (prepend) parent.createEl("hr");
     const date = this.transformer.formatter.formatDate(event.date);
-    return before +
-      `<h4 class="tlv-date-title">${date}</h4>` +
-      event.content;
+    parent.createEl("h4", { cls: "tlv-date-title", text: date });
+    const children = Array.from(event.content.childNodes);
+    parent.append(...children);
   }
 
-  private formatSpan(event: SpanTimeEvent, before = ""): string {
+  private formatSpan(parent: HTMLElement, event: SpanTimeEvent) {
     const date = this.transformer.formatter.formatSpan(event.fromDate, event.toDate);
-    return before +
-      `<h4 class="tlv-date-title">${date}</h4>` +
-      event.content;
+    parent.createEl("h4", { cls: "tlv-date-title", text: date });
+    const children = Array.from(event.content.childNodes);
+    parent.append(...children);
   }
 
   private calculatePosition(date: Moment): number {

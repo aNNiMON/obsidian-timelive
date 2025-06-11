@@ -6,7 +6,7 @@ export enum TimeEventType {
 }
 
 export interface TimeEvent {
-  content: string;
+  content: HTMLElement;
   type: TimeEventType;
 }
 

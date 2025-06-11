@@ -53,11 +53,9 @@ export default class TimelivePlugin extends Plugin {
         // All list items must match a pattern
         const m = li.innerText.match(REGEX_COMMON);
         if (!m) return;
-
-        timelive.addEvent(
-          m[1],
-          li.innerHTML.replace(REGEX_COMMON_REPLACE, ""),
-        );
+        const clone = li.cloneNode(true) as HTMLElement;
+        clone.innerHTML = clone.innerHTML.replace(REGEX_COMMON_REPLACE, "");
+        timelive.addEvent(m[1], clone);
       }
       timelive.render();
     });
