@@ -1,4 +1,5 @@
 ## Timelive plugin
+
 - |2025-02-05| Came up with the idea
 - |2025-02-15| Started learning Obsidian plugin development
 - |2025-02-19| First working prototype
@@ -7,4 +8,5 @@
 - |2025-03-01| Added settings, pre-release
 - |2025-03-02| Switched to Deno, added an editor command
 - |2025-03-28 - 2025-04-06| Implementing time spans
-- |present| Developing the `Timelive` plugin 
+- |2025-06-11| Operate DOM element tree better way
+- |present| Developing the `Timelive` plugin
