@@ -136,10 +136,13 @@ export class Timelive {
   }
 
   private createPopover(marker: HTMLElement): HTMLElement {
-    const popover = marker.createDiv({
+    const popover = document.body.createDiv({
       cls: "tlv-popup popover hover-popover",
     });
     marker.onmouseover = marker.ontouchstart = () => {
+      const { x, y } = this.getPopoverPosition(marker);
+      popover.style.left = `${x}px`;
+      popover.style.top = `${y}px`;
       popover.style.display = "block";
     };
     marker.onmouseout = marker.ontouchend = () => {
@@ -217,5 +220,12 @@ export class Timelive {
       this.splitYears(years, average, b, level + 1);
     }
     return years;
+  }
+
+  private getPopoverPosition(marker: HTMLElement): { x: number; y: number } {
+    const rect = marker.getBoundingClientRect();
+    const x = rect.left + globalThis.scrollX;
+    const y = rect.top + globalThis.scrollY + marker.offsetHeight;
+    return { x, y };
   }
 }
