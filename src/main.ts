@@ -63,6 +63,10 @@ export default class TimelivePlugin extends Plugin {
     this.addSettingTab(new TimeliveSettingTab(this.app, this));
   }
 
+  override onunload() {
+    document.body.findAll("tlv-popup popover hover-popover").forEach((el) => el.remove());
+  }
+
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
