@@ -1,15 +1,16 @@
 # Timelive Plugin
 
-Plugin for [Obsidian](https://obsidian.md) that turns a list of dates into a
-timeline.
+Plugin for [Obsidian](https://obsidian.md) that turns a list of dates into a timeline.
 
 ## Usage
 
 The key difference from other timeline plugins is that Timelive doesn't use a code block. It's much easier to format any date event, provide a link or block of code, add an image or a video, etc.
 
-To build a timeline, you need to define a list of dates, enclosed by the `|` symbol. The date format is automatically detected, but in case of ambiguity, the preferred format can be selected in the preferences.
+To build a timeline, you need to define a list of dates, enclosed by the `|` symbol. The date format is automatically detected, but in case of ambiguity, the preferred format can be selected in the preferences. You can also generate a placeholder with the **Timelive: New block** action (accessible from  <kbd>Ctrl+P</kbd> Command Palette).
 
 There is also support for time spans. Just define two dates separated by ` - ` and they will be turned into a span.
+
+The timeline will be rendered in Reading view, or in Live Editing mode in case you embed a note with a timeline.
 
 ````
 ## Demo
@@ -35,8 +36,7 @@ There is also support for time spans. Just define two dates separated by ` - ` a
 - |2056-05-24| Some future event
 ````
 
-Use `now`, `today` or `present` to indicate that the project is live and that
-today's marker should be added.
+Use `now`, `today` or `present` to indicate that the project is live and that today's marker should be added.
 
 ![preview](https://github.com/aNNiMON/obsidian-timelive/blob/images/preview.png?raw=true)
 
