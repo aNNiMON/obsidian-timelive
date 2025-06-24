@@ -9,4 +9,5 @@
 - |2025-03-02| Switched to Deno, added an editor command
 - |2025-03-28 - 2025-04-06| Implementing time spans
 - |2025-06-11| Operate DOM element tree better way
+- |2025-06-13| Plugin included in the Community plugins list 🎉 
 - |present| Developing the `Timelive` plugin
