@@ -59,17 +59,18 @@ export class Timelive {
   public render() {
     this.root.empty();
     this.root.style.minWidth = "100%";
-    this.renderYears();
+    this.renderCalendar();
     this.renderLine();
   }
 
-  private renderYears() {
+  private renderCalendar() {
     const yearsContainer = this.root.createDiv({ cls: "tlv-years" });
-    const { fromYear, toYear } = this.timelineBuilder.getYearRange();
-    const years = this.splitYears(new Set<number>(), fromYear, toYear, 0);
-    [...years]
+    const { dates, unit } = this.timelineBuilder.buildCalendarDates();
+    const fmt = this.transformer.formatter;
+    const formattedDates = [...dates].map((date) => fmt.formatCalendarDate(date, unit));
+    [...new Set(formattedDates)]
       .sort()
-      .forEach((year) => yearsContainer.createSpan({ text: `${year}` }));
+      .forEach((date) => yearsContainer.createSpan({ text: `${date}` }));
   }
 
   private renderLine() {
@@ -174,22 +175,6 @@ export class Timelive {
     parent.createEl("h4", { cls: "tlv-date-title", text: date });
     const children = Array.from(event.content.childNodes);
     parent.append(...children);
-  }
-
-  // Recursively split years for building a years line
-  private splitYears(
-    years: Set<number>,
-    a: number,
-    b: number,
-    level: number,
-  ): Set<number> {
-    if (level < 3 && a != b) {
-      years.add(a).add(b);
-      const average = Math.floor(a / 2 + b / 2);
-      this.splitYears(years, a, average, level + 1);
-      this.splitYears(years, average, b, level + 1);
-    }
-    return years;
   }
 
   private getPopoverPosition(marker: HTMLElement): { x: number; y: number } {
