@@ -1,22 +1,18 @@
 import type { Moment } from "moment";
 import { DateTransformer } from "./DateTransformer.ts";
+import { DynamicTimelineBuilder, TimelineBuilder } from "./TimelineBuilder.ts";
 import { SingleTimeEvent, SpanTimeEvent, TimeEvent, TimeEventType } from "./TimeEvent.ts";
-
-const DAYS_IN_YEAR = 365.2422;
 
 export class Timelive {
   private root: HTMLElement;
   private transformer: DateTransformer;
+  private timelineBuilder: TimelineBuilder;
   private events: TimeEvent[] = [];
-  // For timeline computation
-  private minDate?: Moment;
-  private maxDate?: Moment;
-  private startDateTime = 0;
-  private totalDays = 0;
 
   constructor(root: HTMLElement, transformer: DateTransformer) {
     this.root = root;
     this.transformer = transformer;
+    this.timelineBuilder = new DynamicTimelineBuilder();
   }
 
   public addEvent(dateString: string, content: HTMLElement) {
@@ -42,7 +38,7 @@ export class Timelive {
         type: TimeEventType.Single,
       } as SingleTimeEvent,
     );
-    this.recalculateMinMaxDates(date);
+    this.timelineBuilder.addDate(date);
   }
 
   private addSpan(fromDate: Moment, toDate: Moment, content: HTMLElement) {
@@ -56,27 +52,8 @@ export class Timelive {
         type: TimeEventType.Span,
       } as SpanTimeEvent,
     );
-    this.recalculateMinMaxDates(fromDate);
-    this.recalculateMinMaxDates(toDate);
-  }
-
-  private recalculateMinMaxDates(date: Moment) {
-    const time = date.valueOf();
-    if (!this.minDate || !this.maxDate) {
-      this.minDate = date;
-      this.maxDate = date;
-      this.startDateTime = time;
-    } else {
-      if (time < this.minDate.valueOf()) {
-        this.minDate = date;
-        this.startDateTime = time;
-      } else if (time > this.maxDate.valueOf()) {
-        this.maxDate = date;
-      } else return; // no updates to min/max dates -> skip
-    }
-    // Recalculate total days
-    const deltaYears = 1 + this.maxDate.diff(this.minDate, "years");
-    this.totalDays = deltaYears * DAYS_IN_YEAR;
+    this.timelineBuilder.addDate(fromDate);
+    this.timelineBuilder.addDate(toDate);
   }
 
   public render() {
@@ -88,8 +65,7 @@ export class Timelive {
 
   private renderYears() {
     const yearsContainer = this.root.createDiv({ cls: "tlv-years" });
-    const fromYear = this.minDate?.year() ?? (new Date().getFullYear());
-    const toYear = 1 + (this.maxDate?.year() ?? fromYear);
+    const { fromYear, toYear } = this.timelineBuilder.getYearRange();
     const years = this.splitYears(new Set<number>(), fromYear, toYear, 0);
     [...years]
       .sort()
@@ -98,12 +74,13 @@ export class Timelive {
 
   private renderLine() {
     const timelineLine = this.root.createDiv({ cls: "tlv-timeline" });
-    if (this.minDate && this.maxDate) {
+    const { min, max } = this.timelineBuilder.getActualTimeSpan();
+    if (min && max) {
       const highlight = timelineLine.createDiv({
         cls: "tlv-timeline-highlight",
       });
-      const start = this.calculatePosition(this.minDate);
-      const width = this.calculatePosition(this.maxDate) - start;
+      const start = this.timelineBuilder.calculatePosition(min);
+      const width = this.timelineBuilder.calculatePosition(max) - start;
       highlight.style.left = `${start}%`;
       highlight.style.width = `${width}%`;
     }
@@ -160,8 +137,8 @@ export class Timelive {
       .map((event) => event as SpanTimeEvent)
       .sort((a, b) => a.fromDate.valueOf() - b.fromDate.valueOf())
       .forEach((event) => {
-        event.position = this.calculatePosition(event.fromDate);
-        event.width = this.calculatePosition(event.toDate) - event.position;
+        event.position = this.timelineBuilder.calculatePosition(event.fromDate);
+        event.width = this.timelineBuilder.calculatePosition(event.toDate) - event.position;
         merged.push(event);
       });
     events
@@ -169,7 +146,7 @@ export class Timelive {
       .map((event) => event as SingleTimeEvent)
       .sort((a, b) => a.date.valueOf() - b.date.valueOf())
       .forEach((event, i) => {
-        event.position = this.calculatePosition(event.date);
+        event.position = this.timelineBuilder.calculatePosition(event.date);
         if (i > 0 && (event.position - lastPosition) < CLOSEST_DELTA) {
           const lastEl = merged[merged.length - 1].content;
           lastEl.createEl("hr");
@@ -197,13 +174,6 @@ export class Timelive {
     parent.createEl("h4", { cls: "tlv-date-title", text: date });
     const children = Array.from(event.content.childNodes);
     parent.append(...children);
-  }
-
-  private calculatePosition(date: Moment): number {
-    const deltaDays = date.diff(this.startDateTime, "days");
-    const value = (deltaDays / this.totalDays) * 100;
-    // Round to 3 decimal points
-    return Math.round(value * 1000) / 1000;
   }
 
   // Recursively split years for building a years line
