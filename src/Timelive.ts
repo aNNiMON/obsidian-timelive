@@ -117,15 +117,23 @@ export class Timelive {
     const popover = document.body.createDiv({
       cls: "tlv-popup popover hover-popover",
     });
-    marker.onmouseover = marker.ontouchstart = () => {
-      const { x, y } = this.getPopoverPosition(marker);
-      popover.style.left = `${x}px`;
-      popover.style.top = `${y}px`;
-      popover.style.display = "block";
-    };
-    marker.onmouseout = marker.ontouchend = () => {
-      popover.style.display = "none";
-    };
+    popover.onmouseover =
+      popover.ontouchstart =
+      marker.onmouseover =
+      marker.ontouchstart =
+        () => {
+          const { x, y } = this.getPopoverPosition(marker);
+          popover.style.left = `${x}px`;
+          popover.style.top = `${y}px`;
+          popover.style.display = "block";
+        };
+    popover.onmouseout =
+      popover.ontouchend =
+      marker.onmouseout =
+      marker.ontouchend =
+        () => {
+          popover.style.display = "none";
+        };
     return popover;
   }
 
