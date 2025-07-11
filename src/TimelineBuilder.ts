@@ -104,7 +104,7 @@ export class DynamicTimelineBuilder implements TimelineBuilder {
     const { min, max } = this.actualSpan;
     if (!min || !max) return TimeUnit.Month;
     const deltaMonths = max.diff(min, "months");
-    if (deltaMonths <= 6) return TimeUnit.Month;
+    if (deltaMonths <= 10) return TimeUnit.Month;
     return TimeUnit.Year;
   }
 

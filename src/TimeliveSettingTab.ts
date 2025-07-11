@@ -27,14 +27,25 @@ export class TimeliveSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
+      .setName("Calendar month format")
+      .setDesc("Calendar row format for years and months only")
+      .addMomentFormat((mf) => {
+        mf.setValue(this.plugin.settings.calendarMonthFormat);
+        mf.onChange((value: string) => {
+          this.plugin.settings.calendarMonthFormat = value;
+          this.plugin.saveSettings();
+        });
+      });
+
+    new Setting(containerEl)
       .setName("Parse date format")
       .setDesc("Preferred date format for parsing markdown dates in lists")
       .addDropdown((dropdown) => {
         dropdown.addOptions(PARSE_DATE_FORMATS);
         dropdown.setValue(this.plugin.settings.parseDateFormat);
-        dropdown.onChange(async (value: string) => {
+        dropdown.onChange((value: string) => {
           this.plugin.settings.parseDateFormat = value as DateFormat;
-          await this.plugin.saveSettings();
+          this.plugin.saveSettings();
         });
       });
   }
