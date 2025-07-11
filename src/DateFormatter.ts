@@ -25,7 +25,7 @@ export class TimeliveDateFormatter implements DateFormatter {
 
   public formatCalendarDate(date: Moment, unit: TimeUnit): string {
     if (unit === TimeUnit.Month) {
-      return date.format("YYYY-MM");
+      return date.format(this.settings.calendarMonthFormat);
     } else {
       return date.format("YYYY");
     }
