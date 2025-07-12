@@ -67,9 +67,10 @@ export class Timelive {
     const yearsContainer = this.root.createDiv({ cls: "tlv-years" });
     const { dates, unit } = this.timelineBuilder.buildCalendarDates();
     const fmt = this.transformer.formatter;
-    const formattedDates = [...dates].map((date) => fmt.formatCalendarDate(date, unit));
-    [...new Set(formattedDates)]
-      .sort()
+    [...dates]
+      .sort((a, b) => a.valueOf() - b.valueOf())
+      .map((date) => fmt.formatCalendarDate(date, unit))
+      .unique()
       .forEach((date) => yearsContainer.createSpan({ text: `${date}` }));
   }
 
