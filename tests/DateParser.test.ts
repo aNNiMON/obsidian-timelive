@@ -1,4 +1,4 @@
-import { expect } from "jsr:@std/expect";
+import { expect } from "@std/expect";
 import { DateFormat, DateParser, TimeliveDateParser } from "../src/DateParser.ts";
 import { MockTimeliveSettings } from "./MockTimeliveSettings.ts";
 import moment from "moment";
