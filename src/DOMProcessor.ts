@@ -24,9 +24,22 @@ export class InternalLinkProcessor implements DOMProcessor {
       if (!href) return;
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        this.app.workspace.openLinkText(href, ctx.sourcePath);
+        const newTab = this.shouldOpenInNewTab(e);
+        this.app.workspace.openLinkText(href, ctx.sourcePath, newTab);
       });
     });
     return element;
+  }
+
+  private shouldOpenInNewTab(e: Event): boolean {
+    if (
+      e instanceof PointerEvent ||
+      e instanceof MouseEvent ||
+      e instanceof TouchEvent ||
+      e instanceof KeyboardEvent
+    ) {
+      return (e.ctrlKey || e.metaKey);
+    }
+    return false;
   }
 }
