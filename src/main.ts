@@ -6,6 +6,7 @@ import { DateTransformer } from "./DateTransformer.ts";
 import { TimeliveDateFormatter } from "./DateFormatter.ts";
 import { DEFAULT_SETTINGS, TimeliveSettings } from "./TimeliveSettings.ts";
 import { TimeliveSettingTab } from "./TimeliveSettingTab.ts";
+import { CompoundDOMProcessor, InternalLinkProcessor } from "./DOMProcessor.ts";
 
 const REGEX_COMMON = /^\|(.{3,30}?)\|/;
 const REGEX_COMMON_REPLACE = /^\s*<span.*?\/span>\|(.{3,30}?)\|\s*/gm;
@@ -20,6 +21,9 @@ export default class TimelivePlugin extends Plugin {
       new TimeliveDateParser(this.settings),
       new TimeliveDateFormatter(this.settings),
     );
+    const domProcessor = new CompoundDOMProcessor([
+      new InternalLinkProcessor(this.app),
+    ]);
 
     this.addCommand({
       id: "timelive-new-block",
@@ -44,7 +48,7 @@ export default class TimelivePlugin extends Plugin {
       },
     });
 
-    this.registerMarkdownPostProcessor((element, _context) => {
+    this.registerMarkdownPostProcessor((element, context) => {
       const ul = element.find("ul");
       if (!ul) return;
 
@@ -55,6 +59,7 @@ export default class TimelivePlugin extends Plugin {
         if (!m) return;
         const clone = li.cloneNode(true) as HTMLElement;
         clone.innerHTML = clone.innerHTML.replace(REGEX_COMMON_REPLACE, "");
+        domProcessor.process(clone, context);
         timelive.addEvent(m[1], clone);
       }
       timelive.render();
