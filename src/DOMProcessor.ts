@@ -1,4 +1,4 @@
-import { App, MarkdownPostProcessorContext } from "obsidian";
+import { App, MarkdownPostProcessorContext, Platform } from "obsidian";
 
 export interface DOMProcessor {
   process(element: HTMLElement, ctx: MarkdownPostProcessorContext): HTMLElement;
@@ -22,11 +22,17 @@ export class InternalLinkProcessor implements DOMProcessor {
     element.querySelectorAll("a[data-href].internal-link").forEach((link) => {
       const href = link.getAttribute("data-href");
       if (!href) return;
-      link.addEventListener("click", (e) => {
+      link.addEventListener("click", (e: Event) => {
         e.preventDefault();
         const newTab = this.shouldOpenInNewTab(e);
         this.app.workspace.openLinkText(href, ctx.sourcePath, newTab);
       });
+      if (!Platform.isDesktopApp) {
+        link.addEventListener("contextmenu", (e: Event) => {
+          e.preventDefault();
+          this.app.workspace.openLinkText(href, ctx.sourcePath, true);
+        });
+      }
     });
     return element;
   }
