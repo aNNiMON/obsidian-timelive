@@ -11,4 +11,5 @@
 - |2025-06-11| Operate DOM element tree better way
 - |2025-06-13| Plugin included in the Community plugins list 🎉
 - |2025-07-12| Timelive [v1.1.0](https://github.com/aNNiMON/obsidian-timelive/releases/tag/1.1.0) released
+- |2025-12-20| Timelive [v1.2.0](https://github.com/aNNiMON/obsidian-timelive/releases/tag/1.2.0) released
 - |present| Developing the `Timelive` plugin
